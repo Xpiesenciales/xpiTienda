@@ -11,7 +11,7 @@ export async function GET() {
     const usuarios = await prisma.usuario.findMany({ 
       orderBy: { createdAt: 'desc' } 
     });
-    return NextResponse.json({ success: true, data: usuarios });
+    return NextResponse.json({ success: true,  usuarios });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Error al obtener datos' }, { status: 500 });
   }
@@ -21,12 +21,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const nuevoUsuario = await prisma.usuario.create({
-      data: { 
+       {
         nombre: body.nombre, 
         email: body.email 
       },
     });
-    return NextResponse.json({ success: true, data: nuevoUsuario });
+    return NextResponse.json({ success: true,  nuevoUsuario });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Error al crear usuario' }, { status: 500 });
   }
