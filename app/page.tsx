@@ -15,31 +15,45 @@ export default function Home() {
   const [cargando, setCargando] = useState(false);
 
   const cargarUsuarios = async () => {
-    const res = await fetch('/api/usuarios');
-    const data = await res.json();
-    if (data.success) setUsuarios(data.data);
+    try {
+      const res = await fetch('/api/usuarios');
+      const data = await res.json();
+      if (data.success && data.usuarios) {
+        setUsuarios(data.usuarios);
+      }
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+    }
   };
 
-  useEffect(() => { cargarUsuarios(); }, []);
+  useEffect(() => { 
+    cargarUsuarios(); 
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargando(true);
-    await fetch('/api/usuarios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, email }),
-    });
-    setNombre('');
-    setEmail('');
-    setCargando(false);
-    cargarUsuarios();
+    try {
+      await fetch('/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email }),
+      });
+      setNombre('');
+      setEmail('');
+      cargarUsuarios();
+    } catch (error) {
+      console.error('Error al crear usuario:', error);
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Gestión de Usuarios</h1>
+        
         <form onSubmit={handleSubmit} className="space-y-4 mb-8">
           <input 
             type="text" 
@@ -65,9 +79,10 @@ export default function Home() {
             {cargando ? 'Guardando...' : 'Agregar Usuario'}
           </button>
         </form>
+        
         <div className="space-y-2">
           <h2 className="font-semibold text-lg">Usuarios Registrados</h2>
-          {usuarios.length === 0 ? (
+          {!usuarios || usuarios.length === 0 ? (
             <p className="text-gray-500">No hay usuarios aún.</p>
           ) : (
             usuarios.map((u) => (
