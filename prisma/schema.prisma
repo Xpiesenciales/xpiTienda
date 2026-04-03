@@ -1,15 +1,415 @@
-generator client {
-  provider = "prisma-client-js"
-}
+// ============================================
+// SCHEMA COMPLETO - XPI TIENDA E-COMMERCE
+// ============================================
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================
+// USUARIOS
+// ============================================
+
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id              Int              @id @default(autoincrement())
+  nombre          String
+  username        String           @unique
+  email           String           @unique
+  password        String
+  telefono        String?
+  direccion       String?
+  ciudad          String?
+  distrito        String?
+  codigoPostal    String?
+  pais            String           @default("Perú")
+  rol             Rol              @default(CLIENTE)
+  isActive        Boolean          @default(true)
+  emailVerified   DateTime?
+  lastLogin       DateTime?
+  
+  carrito         Carrito?
+  direcciones     Direccion[]
+  pedidos         Pedido[]
+  reseñas         Reseña[]
+  favoritos       Favorito[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([email])
+  @@index([username])
+  @@index([rol])
+}
+
+enum Rol {
+  ADMIN
+  CLIENTE
+  VENDEDOR
+}
+
+// ============================================
+// DIRECCIONES
+// ============================================
+
+model Direccion {
+  id              Int      @id @default(autoincrement())
+  alias           String
+  direccion       String
+  ciudad          String
+  distrito        String
+  codigoPostal    String?
+  pais            String   @default("Perú")
+  esPredeterminada Boolean @default(false)
+  
+  usuarioId       Int
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  pedidos         Pedido[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([usuarioId])
+}
+
+// ============================================
+// CATEGORÍAS Y PRODUCTOS
+// ============================================
+
+model Categoria {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @unique
+  slug        String      @unique
+  descripcion String?
+  imagen      String?
+  parentId    Int?
+  parent      Categoria?  @relation("CategoriaHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Categoria[] @relation("CategoriaHierarchy")
+  productos   Producto[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([slug])
+}
+
+model Marca {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @unique
+  slug        String      @unique
+  descripcion String?
+  logo        String?
+  productos   Producto[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Producto {
+  id                  Int               @id @default(autoincrement())
+  nombre              String
+  slug                String            @unique
+  descripcion         String?           @db.Text
+  descripcionCorta    String?
+  referencia          String?           @unique
+  precio              Decimal           @db.Decimal(10, 2)
+  precioOferta        Decimal?          @db.Decimal(10, 2)
+  precioCosto         Decimal?          @db.Decimal(10, 2)
+  stock               Int               @default(0)
+  stockMinimo         Int               @default(5)
+  esActivo            Boolean           @default(true)
+  esDestacado         Boolean           @default(false)
+  esNuevo             Boolean           @default(false)
+  visitas             Int               @default(0)
+  ventas              Int               @default(0)
+  calificacionPromedio Float            @default(0)
+  totalReseñas        Int               @default(0)
+  
+  tallas              String[]
+  colores             String[]
+  material            String?
+  peso                Decimal?          @db.Decimal(8, 2)
+  dimensiones         String?
+  
+  metaTitulo          String?
+  metaDescripcion     String?
+  metaKeywords        String[]
+  
+  categoriaId         Int
+  marcaId             Int?
+  categoria           Categoria         @relation(fields: [categoriaId], references: [id])
+  marca               Marca?            @relation(fields: [marcaId], references: [id])
+  
+  imagenes            ImagenProducto[]
+  variantes           VarianteProducto[]
+  itemsPedido         ItemPedido[]
+  reseñas             Reseña[]
+  favoritos           Favorito[]
+  
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([categoriaId])
+  @@index([marcaId])
+  @@index([slug])
+  @@index([referencia])
+  @@index([esActivo])
+}
+
+model ImagenProducto {
+  id          Int      @id @default(autoincrement())
+  url         String
+  alt         String?
+  isPrincipal Boolean  @default(false)
+  orden       Int      @default(0)
+  productId   Int
+  producto    Producto @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model VarianteProducto {
+  id              Int              @id @default(autoincrement())
+  sku             String           @unique
+  talla           String?
+  color           String?
+  precio          Decimal?         @db.Decimal(10, 2)
+  stock           Int              @default(0)
+  imagen          String?
+  
+  productId       Int
+  producto        Producto         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  itemsPedido     ItemPedido[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([productId])
+  @@index([sku])
+}
+
+// ============================================
+// CARRITO Y FAVORITOS
+// ============================================
+
+model Carrito {
+  id          Int            @id @default(autoincrement())
+  usuarioId   Int            @unique
+  usuario     Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  items       ItemCarrito[]
+  updatedAt   DateTime       @updatedAt
+}
+
+model ItemCarrito {
+  id              Int              @id @default(autoincrement())
+  cantidad        Int              @default(1)
+  
+  productId       Int
+  producto        Producto         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  varianteId      Int?
+  variante        VarianteProducto? @relation(fields: [varianteId], references: [id])
+  
+  carritoId       Int
+  carrito         Carrito          @relation(fields: [carritoId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([carritoId, productId, varianteId])
+}
+
+model Favorito {
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int
+  productoId  Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+
+  @@unique([usuarioId, productoId])
+}
+
+// ============================================
+// PEDIDOS Y VENTAS
+// ============================================
+
+model Pedido {
+  id                    Int              @id @default(autoincrement())
+  numero                String           @unique
+  estado                EstadoPedido     @default(PENDIENTE)
+  
+  usuarioId             Int?
+  usuario               Usuario?         @relation(fields: [usuarioId], references: [id])
+  clienteNombre         String
+  clienteEmail          String
+  clienteTelefono       String?
+  
+  direccionEnvioId      Int?
+  direccionEnvio        Direccion?       @relation(fields: [direccionEnvioId], references: [id])
+  direccionEnvioTexto   String           @db.Text
+  
+  subtotal              Decimal          @db.Decimal(10, 2)
+  descuento             Decimal          @default(0) @db.Decimal(10, 2)
+  impuesto              Decimal          @default(0) @db.Decimal(10, 2)
+  envioCosto            Decimal          @default(0) @db.Decimal(10, 2)
+  total                 Decimal          @db.Decimal(10, 2)
+  
+  metodoPago            MetodoPago?
+  estadoPago            EstadoPago       @default(PENDIENTE)
+  transaccionId         String?
+  pagoConfirmadoEn      DateTime?
+  
+  metodoEnvio           MetodoEnvio?
+  fechaEnvio            DateTime?
+  fechaEntregaEstimada  DateTime?
+  fechaEntregaReal      DateTime?
+  guiaRemision          String?
+  trackingNumber        String?
+  
+  requiereFactura       Boolean          @default(false)
+  tipoDocumento         TipoDocumento?
+  numeroDocumento       String?
+  razonSocial           String?
+  ruc                   String?
+  direccionFiscal       String?
+  facturaGenerada       Boolean          @default(false)
+  facturaNumero         String?
+  facturaFecha          DateTime?
+  facturaXml            String?
+  facturaPdf            String?
+  
+  notasCliente          String?          @db.Text
+  notasAdmin            String?          @db.Text
+  
+  items                 ItemPedido[]
+  historialEstado       HistorialPedido[]
+  
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  @@index([numero])
+  @@index([usuarioId])
+  @@index([estado])
+  @@index([createdAt])
+}
+
+enum EstadoPedido {
+  CARRITO
+  PENDIENTE
+  CONFIRMADO
+  EN_PROCESO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+  REEMBOLSADO
+}
+
+enum EstadoPago {
+  PENDIENTE
+  PROCESANDO
+  APROBADO
+  RECHAZADO
+  REEMBOLSADO
+}
+
+enum MetodoPago {
+  EFECTIVO
+  TRANSFERENCIA
+  TARJETA_CREDITO
+  TARJETA_DEBITO
+  YAPE
+  PLIN
+  PAYPAL
+  MERCADOPAGO
+  CULQI
+}
+
+enum MetodoEnvio {
+  RECOJO_TIENDA
+  DELIVERY_PROPIO
+  SERVENTI
+  OLVA
+  SHALOM
+  URBANO
+  OTRO
+}
+
+enum TipoDocumento {
+  DNI
+  RUC
+  CARNET_EXTRANJERIA
+  PASAPORTE
+}
+
+model ItemPedido {
+  id              Int              @id @default(autoincrement())
+  cantidad        Int              @default(1)
+  precioUnitario  Decimal          @db.Decimal(10, 2)
+  descuento       Decimal          @default(0) @db.Decimal(10, 2)
+  subtotal        Decimal          @db.Decimal(10, 2)
+  
+  productId       Int
+  producto        Producto         @relation(fields: [productId], references: [id])
+  
+  varianteId      Int?
+  variante        VarianteProducto? @relation(fields: [varianteId], references: [id])
+  
+  tallaSeleccionada String?
+  colorSeleccionado String?
+  
+  pedidoId        Int
+  pedido          Pedido           @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([productId])
+  @@index([pedidoId])
+}
+
+model HistorialPedido {
+  id          Int          @id @default(autoincrement())
+  estado      EstadoPedido
+  nota        String?
+  pedidoId    Int
+  pedido      Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+
+  @@index([pedidoId])
+}
+
+// ============================================
+// RESEÑAS
+// ============================================
+
+model Reseña {
+  id              Int              @id @default(autoincrement())
+  calificacion    Int
+  titulo          String?
+  comentario      String?          @db.Text
+  esVerificada    Boolean          @default(false)
+  esAprobada      Boolean          @default(false)
+  imagenes        String[]
+  
+  usuarioId       Int
+  usuario         Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  productoId      Int
+  producto        Producto         @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  pedidoId        Int?
+  pedido          Pedido?          @relation(fields: [pedidoId], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([productoId])
+  @@index([usuarioId])
 }
