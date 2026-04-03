@@ -45,7 +45,6 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargando(true);
-    setMensaje(null);
 
     try {
       const res = await fetch('/api/usuarios', {
@@ -74,6 +73,11 @@ export default function Home() {
     }
   };
 
+  // Función para verificar si hay usuarios (SIN .length)
+  const hayUsuarios = () => {
+    return usuarios && usuarios[0];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
       <header className="bg-white/10 backdrop-blur-md shadow-lg">
@@ -96,78 +100,53 @@ export default function Home() {
 
         {vista === 'lista' && (
           <div className="bg-white rounded-2xl shadow-2xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">👥 Usuarios Registrados</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">👥 Usuarios</h2>
             
             {cargandoInicial ? (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                <p className="mt-2 text-gray-600">Cargando...</p>
-              </div>
-            ) : usuarios.length > 0 ? (
+              <div className="text-center py-8">Cargando...</div>
+            ) : hayUsuarios() ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                      <th className="p-3 text-left rounded-tl-lg">ID</th>
+                      <th className="p-3 text-left">ID</th>
                       <th className="p-3 text-left">Nombre</th>
                       <th className="p-3 text-left">Username</th>
                       <th className="p-3 text-left">Email</th>
                       <th className="p-3 text-left">Rol</th>
-                      <th className="p-3 text-left rounded-tr-lg">Fecha</th>
+                      <th className="p-3 text-left">Fecha</th>
                     </tr>
                   </thead>
                   <tbody>
                     {usuarios.map((u) => (
-                      <tr key={u.id} className="border-b hover:bg-purple-50 transition">
-                        <td className="p-3 font-medium text-gray-700">#{u.id}</td>
-                        <td className="p-3 text-gray-800">{u.nombre}</td>
-                        <td className="p-3">
-                          {u.username ? (
-                            <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">@{u.username}</span>
-                          ) : (
-                            <span className="text-gray-400 text-sm">-</span>
-                          )}
-                        </td>
-                        <td className="p-3 text-gray-600">{u.email}</td>
-                        <td className="p-3">
-                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                            {u.rol || 'CLIENTE'}
-                          </span>
-                        </td>
-                        <td className="p-3 text-gray-500 text-sm">{new Date(u.createdAt).toLocaleDateString()}</td>
+                      <tr key={u.id} className="border-b hover:bg-purple-50">
+                        <td className="p-3">#{u.id}</td>
+                        <td className="p-3">{u.nombre}</td>
+                        <td className="p-3">{u.username || '-'}</td>
+                        <td className="p-3">{u.email}</td>
+                        <td className="p-3">{u.rol || 'CLIENTE'}</td>
+                        <td className="p-3">{new Date(u.createdAt).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-center text-gray-500 py-8">No hay usuarios registrados.</p>
+              <p className="text-center text-gray-500 py-8">No hay usuarios.</p>
             )}
           </div>
         )}
 
         {vista === 'registro' && (
           <div className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">📝 Registrar Usuario</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">📝 Registrar</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Nombre</label>
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="Juan Pérez" required />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Username</label>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="@juanperez" required />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="juan@email.com" required />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Contraseña</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="••••••••" required minLength={6} />
-              </div>
-              <button type="submit" disabled={cargando} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition disabled:opacity-50">
-                {cargando ? 'Registrando...' : '🎉 Registrar'}
+              <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full p-3 border rounded-lg" placeholder="Nombre" required />
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-3 border rounded-lg" placeholder="Username" required />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border rounded-lg" placeholder="Email" required />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border rounded-lg" placeholder="Contraseña" required minLength={6} />
+              <button type="submit" disabled={cargando} className="w-full bg-purple-600 text-white py-3 rounded-lg">
+                {cargando ? '...' : 'Registrar'}
               </button>
             </form>
           </div>
@@ -175,25 +154,15 @@ export default function Home() {
 
         {vista === 'login' && (
           <div className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">🔐 Iniciar Sesión</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">🔐 Login</h2>
             <form className="space-y-4">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Username o Email</label>
-                <input type="text" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="@usuario" />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Contraseña</label>
-                <input type="password" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="••••••••" />
-              </div>
-              <button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold">🚀 Ingresar</button>
+              <input type="text" className="w-full p-3 border rounded-lg" placeholder="Username" />
+              <input type="password" className="w-full p-3 border rounded-lg" placeholder="Contraseña" />
+              <button type="submit" className="w-full bg-purple-600 text-white py-3 rounded-lg">Ingresar</button>
             </form>
           </div>
         )}
       </main>
-
-      <footer className="bg-white/10 backdrop-blur-md mt-12 py-6">
-        <div className="text-center text-white">© 2024 XPI Tienda</div>
-      </footer>
     </div>
   );
 }
