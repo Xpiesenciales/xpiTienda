@@ -18,7 +18,6 @@ export async function POST(request: Request) {
     const usuario = await prisma.usuario.findFirst({
       where: {
         OR: [{ username }, { email: username }],
-        isActive: true,
       },
       select: {
         id: true,

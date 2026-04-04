@@ -10,7 +10,6 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 export async function GET() {
   try {
     const usuarios = await prisma.usuario.findMany({
-      where: { isActive: true },
       select: {
         id: true,
         nombre: true,
@@ -58,16 +57,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const hashedPassword = password; // En producción, usa bcrypt
-
     const usuario = await prisma.usuario.create({
-      data: {
+       {
         nombre,
         username,
         email,
-        password: hashedPassword,
+        password,
         rol: 'CLIENTE',
-        isActive: true,
       },
       select: {
         id: true,
