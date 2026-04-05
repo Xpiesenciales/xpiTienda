@@ -1,0 +1,22 @@
+0000000000000000000000000000000000000000 da5a9ff0420a44f2627d1c5a0385b66dc09dc7be Abel Posada <abel@email.com> 1774738720 -0500	commit (initial): Mi primera versión
+da5a9ff0420a44f2627d1c5a0385b66dc09dc7be 0000000000000000000000000000000000000000 Jorge Posada <xpiesenciales@gmail.com> 1774739372 -0500	Branch: renamed refs/heads/master to refs/heads/main
+0000000000000000000000000000000000000000 da5a9ff0420a44f2627d1c5a0385b66dc09dc7be Jorge Posada <xpiesenciales@gmail.com> 1774739372 -0500	Branch: renamed refs/heads/master to refs/heads/main
+da5a9ff0420a44f2627d1c5a0385b66dc09dc7be ae5cd28cd815827a5027130198edaf4aa2d5574e Jorge Posada <xpiesenciales@gmail.com> 1774745478 -0500	commit: Corregir error de sintaxis en API de usuarios
+ae5cd28cd815827a5027130198edaf4aa2d5574e ae5cd28cd815827a5027130198edaf4aa2d5574e Jorge Posada <xpiesenciales@gmail.com> 1774746216 -0500	reset: moving to HEAD
+ae5cd28cd815827a5027130198edaf4aa2d5574e 881d75c2e49fa5df9a74e679183e9449b00ce41e Jorge Posada <xpiesenciales@gmail.com> 1774746230 -0500	pull origin main: Merge made by the 'ort' strategy.
+881d75c2e49fa5df9a74e679183e9449b00ce41e 51b2f8f73cffd12e5cc5b1c2c2d8699be639bb72 Jorge Posada <xpiesenciales@gmail.com> 1774747305 -0500	commit: Corregir sintaxis de Prisma create - agregar data:
+51b2f8f73cffd12e5cc5b1c2c2d8699be639bb72 ac4c27995c64913bb0f38c82801785d542386272 Jorge Posada <xpiesenciales@gmail.com> 1774748811 -0500	commit: Agregar postinstall para Prisma en Vercel
+ac4c27995c64913bb0f38c82801785d542386272 7bc2b8846b06ec69a9ccb08d6cc9868207e25987 Jorge Posada <xpiesenciales@gmail.com> 1774753649 -0500	commit: Agregar scheduler y fijar versiones de React
+7bc2b8846b06ec69a9ccb08d6cc9868207e25987 34b2e583dfe981af8ede420624681445145b2455 Jorge Posada <xpiesenciales@gmail.com> 1774754328 -0500	commit: Eliminar next.config.ts y usar next.config.js
+34b2e583dfe981af8ede420624681445145b2455 70a954c02218f685375bc1e135cc5453f15fb46e Jorge Posada <xpiesenciales@gmail.com> 1774755101 -0500	commit: Corregir fuentes - usar Inter en lugar de Geist
+70a954c02218f685375bc1e135cc5453f15fb46e 33879d3a0dd3f60ccc4d01cc9ecc1dbbf4f96439 Jorge Posada <xpiesenciales@gmail.com> 1774756059 -0500	commit: Actualizar package.json con @tailwindcss/postcss
+33879d3a0dd3f60ccc4d01cc9ecc1dbbf4f96439 882b07605ad5616f578f313e3ec6b7a8adfdc35a Jorge Posada <xpiesenciales@gmail.com> 1774756893 -0500	commit: Corregir configuración de PostCSS y Tailwind
+882b07605ad5616f578f313e3ec6b7a8adfdc35a 0ca65eff1a620c7d8f49a0e6384c0174d0a6296d Jorge Posada <xpiesenciales@gmail.com> 1774828214 -0500	commit: Corregir error de undefined en usuarios
+0ca65eff1a620c7d8f49a0e6384c0174d0a6296d eae65670283d37f4ddedaf8c32884227fcdeafae Jorge Posada <xpiesenciales@gmail.com> 1775181831 -0500	commit: Agregar JWT_SECRET y actualizar autenticación
+eae65670283d37f4ddedaf8c32884227fcdeafae 9c0eccdf0d4907f27eb026e9bb44808aedc0075c Jorge Posada <xpiesenciales@gmail.com> 1775183965 -0500	commit: Eliminar todos los .length - version final
+9c0eccdf0d4907f27eb026e9bb44808aedc0075c 3383b3bf49db58a8ec8ff132e85396aed8dd19fa Jorge Posada <xpiesenciales@gmail.com> 1775185303 -0500	commit: Eliminar .length - usar usuarios[0] en su lugar
+3383b3bf49db58a8ec8ff132e85396aed8dd19fa 9d54210ec3c9cea17858c88a4a5656689b51e91f Jorge Posada <xpiesenciales@gmail.com> 1775186825 -0500	commit: Corregir schema.prisma - eliminar errores de sintaxis
+9d54210ec3c9cea17858c88a4a5656689b51e91f 5e5047bcefffe1a2fdb566735aa4ffa693949f22 Jorge Posada <xpiesenciales@gmail.com> 1775187579 -0500	commit: Schema mínimo funcional
+5e5047bcefffe1a2fdb566735aa4ffa693949f22 bb89b261ca3ea947a49da62dc9348c606ce7362e Jorge Posada <xpiesenciales@gmail.com> 1775264624 -0500	commit: Corregir syntax error en route.ts
+bb89b261ca3ea947a49da62dc9348c606ce7362e d925b0b21521ecfdc55df4a2e99fc123a056a5a3 Jorge Posada <xpiesenciales@gmail.com> 1775264984 -0500	commit: Corregir login route - eliminar jwt y bcrypt
+d925b0b21521ecfdc55df4a2e99fc123a056a5a3 64ee1d1aa86fff7453cdca1fc9b0b0034dd316d8 Jorge Posada <xpiesenciales@gmail.com> 1775265472 -0500	commit: Eliminar isActive - usar schema mínimo
